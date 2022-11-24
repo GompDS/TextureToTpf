@@ -8,30 +8,90 @@ public static class Program
     {
         Options op = new();
         
-        foreach (string file in args.Where(x => File.Exists(x) && x.EndsWith("dds")))
+        foreach (string file in args.Where(x => (File.Exists(x) && x.EndsWith("dds")) || Directory.Exists(x)))
         {
-            byte format = 0;
-            string fileName = Path.GetFileNameWithoutExtension(file);
-            if (file.EndsWith("_n.dds", StringComparison.OrdinalIgnoreCase))
-            {
-                format = 0x6A;
-            }
-
-            TPF.Texture newTexture = new(fileName, format, 0, File.ReadAllBytes(file));
             TPF newTpf = new();
-            newTpf.Textures.Add(newTexture);
-
-            if (op.Compression == DCX.Type.None)
+            
+            if (Directory.Exists(file))
             {
-                File.WriteAllBytes(Path.ChangeExtension(file, ".tpf"), newTpf.Write());
+                string[] textures = Directory.EnumerateFiles(file, "*.dds").ToArray();
+                if (textures.Any())
+                { 
+                    foreach (string texture in textures)
+                    {
+                        newTpf.AddTexture(texture, op);
+                    }
+                }
+
+                if (!Directory.EnumerateFiles(file).Any())
+                {
+                    Directory.Delete(file);
+                }
+            }
+            else
+            {
+                newTpf.AddTexture(file, op);
+            }
+            
+            if (!op.UseDcx)
+            {
+                if (Directory.Exists(file))
+                {
+                    File.WriteAllBytes(file[..^1] + ".tpf", newTpf.Write());
+                }
+                else
+                {
+                    File.WriteAllBytes(Path.ChangeExtension(file, ".tpf"), newTpf.Write());
+                }
             }
             else
             {
                 byte[] dcxBytes = DCX.Compress(newTpf.Write(), op.Compression);
-                File.WriteAllBytes(Path.ChangeExtension(file, ".tpf.dcx"), dcxBytes);
+                if (Directory.Exists(file))
+                {
+                    File.WriteAllBytes(file[..^1] + ".tpf.dcx", dcxBytes);
+                }
+                else
+                {
+                    File.WriteAllBytes(Path.ChangeExtension(file, ".tpf.dcx"), dcxBytes);
+                }
             }
-            
-            File.Delete(file);
         }
+    }
+
+    public static void AddTexture(this TPF tpf, string ddsPath, Options op)
+    {
+        byte format = 0;
+        string fileName = Path.GetFileNameWithoutExtension(ddsPath);
+        if (ddsPath.EndsWith("_a.dds", StringComparison.OrdinalIgnoreCase) || 
+                 ddsPath.EndsWith("_a_l.dds", StringComparison.OrdinalIgnoreCase))
+        {
+            format = op.Format.Albedo;
+        }
+        else if (ddsPath.EndsWith("_n.dds", StringComparison.OrdinalIgnoreCase) || 
+            ddsPath.EndsWith("_n_l.dds", StringComparison.OrdinalIgnoreCase))
+        {
+            format = op.Format.Normal;
+        }
+        else if (ddsPath.EndsWith("_m.dds", StringComparison.OrdinalIgnoreCase) || 
+                 ddsPath.EndsWith("_m_l.dds", StringComparison.OrdinalIgnoreCase))
+        {
+            format = op.Format.Metallic;
+        }
+        else if (ddsPath.EndsWith("_vat.dds", StringComparison.OrdinalIgnoreCase) || 
+                 ddsPath.EndsWith("_vat_l.dds", StringComparison.OrdinalIgnoreCase))
+        {
+            format = op.Format.VertexAnimation;
+        }
+        else if (ddsPath.EndsWith("_van.dds", StringComparison.OrdinalIgnoreCase) || 
+                 ddsPath.EndsWith("_van_l.dds", StringComparison.OrdinalIgnoreCase))
+        {
+            format = op.Format.VertexAnimationN;
+        }
+        
+        TPF.Texture newTexture = new(fileName, format, 0, File.ReadAllBytes(ddsPath));
+        tpf.Textures.Add(newTexture);
+
+        //File.Delete(ddsPath);
     }
 }

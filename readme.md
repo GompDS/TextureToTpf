@@ -1,17 +1,24 @@
 # TextureToTpf
 Converts a DDS file into a TPF file. Only built to support PC TPFs.
 
-## How to use
-- Drag and drop any number of DDS files onto TextureToTpf.exe.
-- When prompted, choose which type of compression to use by entering the number that corresponds with the compression type you want.
+## Create single-texture TPF
+- Drag and drop a DDS file onto the executable.
 
-```
-Compression Types:
-0: None (Will be .tpf not .tpf.dcx)
-1: Dark Souls 1 & 2
-2: Dark Souls 3
-3: Sekiro & Elden Ring (Requires oo2core_6_win64.dll)
-```
+## Create multi-texture TPF
+- Create a folder with the name you want for your TPF. Place all DDS files you want included in the TPF into this folder.
+- Drag and drop the folder onto the executable.
+
+## Settings
+After dragging and dropping your file or folder onto the executable, you will be prompted to choose which type of compression to use. Choose the type which matches the game you are working with.
+
+You will be asked if you want to turn your TPF into a DCX file as well.
+
+If multiple files and or folders are dragged and dropped onto the executable the settings you choose apply to all of those files and or folders.
+
+## Known Issues
+- Formats for dds files may be incorrect in certain cases, but this shouldn't be a major issue. If you find any problems related to this let me know.
+- Format settings for ds1/ds2 are untested and are using the same settings as Dark Souls 3 currently.
 
 ## Special Thanks
 - TKGP/JKAnderson: SoulsFormats
+- Rayan: Gave feedback which helped me improve the program.

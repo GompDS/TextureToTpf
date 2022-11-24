@@ -92,6 +92,6 @@ public static class Program
         TPF.Texture newTexture = new(fileName, format, 0, File.ReadAllBytes(ddsPath));
         tpf.Textures.Add(newTexture);
 
-        //File.Delete(ddsPath);
+        File.Delete(ddsPath);
     }
 }

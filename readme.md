@@ -17,6 +17,7 @@ If multiple files and or folders are dragged and dropped onto the executable the
 
 ## Known Issues
 - Formats for dds files may be incorrect in certain cases, but this shouldn't be a major issue. If you find any problems related to this let me know.
+- Menu textures for dark souls 3 seem to all use format 0x66, but this program will give them 0x00 instead. I'm not sure what a fix for this could be, so just be aware of that.
 - Format settings for ds1/ds2 are untested and are using the same settings as Dark Souls 3 currently.
 
 ## Special Thanks
